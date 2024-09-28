@@ -21,7 +21,7 @@ jobs:
           dotnet-version: 8.x
 
       - name: Build project
-        run: dotnet build H2M-Launcher.sln --configuration Debug
+        run: dotnet build H2M-Launcher.sln --configuration Release
 
       - name: Run tests
         run: dotnet test H2M-Launcher.sln --no-build --verbosity normal
