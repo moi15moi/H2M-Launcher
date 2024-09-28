@@ -1,0 +1,37 @@
+name: Build H2M-Launcher and run tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-tests:
+    name: Build and run tests
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Build project
+        run: dotnet build H2M-Launcher.sln --configuration Debug
+
+      - name: Run tests
+        run: dotnet test H2M-Launcher.sln --no-build --verbosity normal
+
+      - name: Publish H2MLauncher.UI
+        run: dotnet publish H2MLauncher.UI --configuration Release --runtime win-x64 /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --self-contained true --output H2MLauncher.UI\release_binary
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: H2M-Launcher
+          if-no-files-found: error
+          path: H2MLauncher.UI\release_binary\H2MLauncher.UI.exe
