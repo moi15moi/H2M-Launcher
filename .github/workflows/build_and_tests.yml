@@ -24,7 +24,7 @@ jobs:
         run: dotnet build H2M-Launcher.sln --configuration Release
 
       - name: Run tests
-        run: dotnet test H2M-Launcher.sln --no-build --verbosity normal
+        run: dotnet test H2M-Launcher.sln --configuration Release --no-build --verbosity normal
 
       - name: Publish H2MLauncher.UI
         run: dotnet publish H2MLauncher.UI --configuration Release --runtime win-x64 /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --self-contained true --output H2MLauncher.UI\release_binary
