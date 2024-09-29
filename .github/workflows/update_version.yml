@@ -1,0 +1,50 @@
+name: Update version based on tag
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  update-files:
+    name: Update files based on tag
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify if the commit is made by GitHub Actions
+        id: check_bot
+        run: |
+          AUTHOR_NAME=$(git log -1 --pretty=format:'%an')
+          echo "AUTHOR_NAME=${AUTHOR_NAME}" >> $GITHUB_ENV
+
+      - name: Stop workflow if the commit is made by GitHub Actions bot
+        run: |
+          if [ "${AUTHOR_NAME}" == "github-actions[bot]" ]; then
+            echo "This commit is made by GitHub Actions bot, stopping workflow..."
+            exit 0
+          fi
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Modify AssemblyInfo.cs and LauncherService.cs
+        # I'm not sure which variable represent correctly the tag and the branch. This need testing
+        run: dotnet run --project ModifyFiles -- ${{github.ref_name}} ${{github.ref_name}}
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update version to ${RELEASE_TAG}"
+
+      - name: Force update the tag
+        run: |
+          git tag -d ${{github.ref_name}} # Delete the old tag locally
+          git tag ${{github.ref_name}} # Recreate the tag on the latest commit
+          git push --force origin ${{github.ref_name}} # Push the new tag
