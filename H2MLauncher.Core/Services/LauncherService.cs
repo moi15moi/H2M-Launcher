@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
 
 using H2MLauncher.Core.Utilities;
@@ -21,7 +21,7 @@ namespace H2MLauncher.Core.Services
 
 
         // IMPORTANT: Set this to the same branch name the tag is created on in GitHub
-        public static readonly string CurrentBranch = "main";
+        public static readonly string CurrentBranch = "Add-workflow";
 
         // IMPORTANT: Set this to the same pre-release label used in GitHub
         // (appended like '-beta') or empty when this is a normal release!
